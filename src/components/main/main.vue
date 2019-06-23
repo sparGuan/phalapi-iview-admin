@@ -1,33 +1,87 @@
 <template>
   <Layout style="height: 100%" class="main">
-    <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider" :style="{overflow: 'hidden'}">
-      <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList">
+    <Sider
+      hide-trigger
+      collapsible
+      :width="160"
+      :collapsed-width="64"
+      v-model="collapsed"
+      class="left-sider"
+      :style="{ overflow: 'hidden' }"
+    >
+      <side-menu
+        accordion
+        ref="sideMenu"
+        :active-name="$route.name"
+        :collapsed="collapsed"
+        @on-select="turnToPage"
+        :menu-list="menuList"
+      >
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
-        <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
+        <div class="logo-con" @click="$router.push({ name: 'home' })">
+          <div
+            v-show="!collapsed"
+            :style="`background-image:url(${maxLogo})`"
+            key="max-logo"
+            class="open-logo"
+          ></div>
+          <div
+            v-show="collapsed"
+            :style="`background-image:url(${minLogo})`"
+            key="min-logo"
+          ></div>
         </div>
       </side-menu>
     </Sider>
     <Layout>
       <Header class="header-con">
-        <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
-          <user :message-unread-count="unreadCount" :user-avator="userAvator"/>
-          <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-          <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
-          <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
+        <header-bar
+          :collapsed="collapsed"
+          @on-coll-change="handleCollapsedChange"
+        >
+          <user :message-unread-count="unreadCount" :user-avator="userAvator" />
+          <!-- <language
+            v-if="$config.useI18n"
+            @on-lang-change="setLocal"
+            style="margin-right: 10px;"
+            :lang="local"
+          /> -->
+          <error-store
+            v-if="
+              $config.plugin['error-store'] &&
+                $config.plugin['error-store'].showInHeader
+            "
+            :has-read="hasReadErrorPage"
+            :count="errorCount"
+          ></error-store>
+          <fullscreen v-model="isFullscreen" style="margin-right: 10px;" />
         </header-bar>
       </Header>
       <Content class="main-content-con">
         <Layout class="main-layout-con">
           <div class="tag-nav-wrapper">
-            <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
+            <tags-nav
+              :value="$route"
+              @input="handleClick"
+              :list="tagNavList"
+              @on-close="handleCloseTag"
+            />
           </div>
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
-              <router-view/>
+              <router-view
+                v-if="isRouterAlive && $route.name !== 'communityComment'"
+              />
+              <div v-else>暂未开放</div>
             </keep-alive>
-            <ABackTop :height="100" :bottom="80" :right="50" container=".content-wrapper"></ABackTop>
+            <Spin size="large" fix v-if="spinShow($route)"></Spin>
+
+            <ABackTop
+              :height="100"
+              :bottom="80"
+              :right="50"
+              container=".content-wrapper"
+            ></ABackTop>
           </Content>
         </Layout>
       </Content>
@@ -46,8 +100,8 @@ import ErrorStore from './components/error-store'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import { getNewTagList, getNextRoute, routeEqual } from '@/libs/util'
 import routers from '@/router/routers'
-import minLogo from '@/assets/images/logo-min.jpg'
-import maxLogo from '@/assets/images/logo.jpg'
+import minLogo from '@/assets/img/min-logo.png'
+import maxLogo from '@/assets/img/logo.png'
 import './main.less'
 export default {
   name: 'Main',
@@ -61,12 +115,18 @@ export default {
     User,
     ABackTop
   },
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
   data () {
     return {
       collapsed: false,
       minLogo,
       maxLogo,
-      isFullscreen: false
+      isFullscreen: false,
+      isRouterAlive: true
     }
   },
   computed: {
@@ -80,7 +140,7 @@ export default {
       return this.$store.state.app.tagRouter
     },
     userAvator () {
-      return this.$store.state.user.avatorImgPath
+      return this.$store.state.user.userInfo.avatar
     },
     cacheList () {
       return ['ParentView', ...this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []]
@@ -106,10 +166,23 @@ export default {
       'setLocal',
       'setHomeRoute'
     ]),
-    ...mapActions([
-      'handleLogin',
-      'getUnreadMessageCount'
-    ]),
+    // ...mapActions([
+    //   'handleLogin',
+    //   'getUnreadMessageCount'
+    // ]),
+    spinShow (route) {
+      console.log(route)
+      if (route.meta.isLock) {
+        return true
+      }
+      return false
+    },
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
+    },
     turnToPage (route) {
       let { name, params, query } = {}
       if (typeof route === 'string') name = route
@@ -177,7 +250,30 @@ export default {
       })
     }
     // 获取未读消息条数
-    this.getUnreadMessageCount()
+    // this.getUnreadMessageCount()
   }
 }
 </script>
+<style lang="less" scoped>
+.main {
+  /deep/.ivu-spin-fix {
+    height: calc(~"100% - 65px");
+    top: 65px;
+  }
+  /deep/.left-sider:not(.ivu-layout-sider-collapsed) {
+    .ivu-layout-sider {
+      background: #fff;
+    }
+  }
+  .logo-con {
+    background-color: #fff;
+    cursor: pointer;
+    .open-logo {
+      height: 44px;
+      background-position: 2px 0px;
+      background-repeat: no-repeat;
+      background-size: 298px 43px;
+    }
+  }
+}
+</style>

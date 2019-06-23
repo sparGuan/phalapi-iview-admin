@@ -1,4 +1,4 @@
-export default {
+const conf = {
   /**
    * @description 配置显示在浏览器标签的title
    */
@@ -17,8 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://iview-admin.phalapi.net',
-    pro: 'http://iview-admin.phalapi.net'
+    dev: 'http://develop.ytr98.com',
+    pro: 'http://www.ytr98.com/'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
@@ -34,3 +34,13 @@ export default {
     }
   }
 }
+/* 全局常量 */
+window.$conf = {}
+window.$conf.baseUrl = '/api/'
+if (process.env.NODE_ENV === 'production') {
+  window.$conf.baseUrl = window.location.origin + '/api/'
+}
+window.$conf.socketUrl = 'websocket 接口地址'
+window.$conf.RETCODE_OK = 0
+
+export default conf

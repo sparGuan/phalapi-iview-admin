@@ -7,7 +7,7 @@ const { title, cookieExpires, useI18n } = config
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, {expires: cookieExpires || 1})
+  Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
 }
 
 export const getToken = () => {
@@ -60,7 +60,7 @@ export const getBreadCrumbList = (route, homeRoute) => {
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hideInBread
   }).map(item => {
-    let meta = {...item.meta}
+    let meta = { ...item.meta }
     if (meta.title && typeof meta.title === 'function') {
       meta.__titleIsFunction__ = true
       meta.title = meta.title(route)
@@ -75,12 +75,12 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu
   })
-  return [{...homeItem, to: homeRoute.path}, ...res]
+  return [{ ...homeItem, to: homeRoute.path }, ...res]
 }
 
 export const getRouteTitleHandled = (route) => {
-  let router = {...route}
-  let meta = {...route.meta}
+  let router = { ...route }
+  let meta = { ...route.meta }
   let title = ''
   if (meta.title) {
     if (typeof meta.title === 'function') {
@@ -99,7 +99,7 @@ export const showTitle = (item, vm) => {
   if (useI18n) {
     if (title.includes('{{') && title.includes('}}') && useI18n) title = title.replace(/({{[\s\S]+?}})/, (m, str) => str.replace(/{{([\s\S]*)}}/, (m, _) => vm.$t(_.trim())))
     else if (__titleIsFunction__) title = item.meta.title
-    else title = vm.$t(item.name)
+    else title = vm.$t(item.meta.title)// vm.$t(item.name)
   } else title = (item.meta && item.meta.title) || item.name
   return title
 }
@@ -394,6 +394,6 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
 export const setTitle = (routeItem, vm) => {
   const handledRoute = getRouteTitleHandled(routeItem)
   const pageTitle = showTitle(handledRoute, vm)
-  const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
+  const resTitle = pageTitle ? `${'银通融'} - ${pageTitle}` : title
   window.document.title = resTitle
 }

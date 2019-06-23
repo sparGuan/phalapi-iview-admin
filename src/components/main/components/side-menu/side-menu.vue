@@ -1,23 +1,90 @@
 <template>
   <div class="side-menu-wrapper">
     <slot></slot>
-    <Menu ref="menu" v-show="!collapsed" :active-name="activeName" :open-names="openedNames" :accordion="accordion" :theme="theme" width="auto" @on-select="handleSelect">
+    <Menu
+      ref="menu"
+      v-show="!collapsed"
+      :active-name="activeName"
+      :open-names="openedNames"
+      :accordion="accordion"
+      :theme="theme"
+      width="auto"
+      @on-select="handleSelect"
+    >
       <template v-for="item in menuList">
         <template v-if="item.children && item.children.length === 1">
-          <side-menu-item v-if="showChildren(item)" :key="`menu-${item.name}`" :parent-item="item"></side-menu-item>
-          <menu-item v-else :name="getNameOrHref(item, true)" :key="`menu-${item.children[0].name}`"><common-icon :type="item.children[0].icon || ''"/><span>{{ showTitle(item.children[0]) }}</span></menu-item>
+          <side-menu-item
+            v-if="showChildren(item)"
+            :key="`menu-${item.name}`"
+            :parent-item="item"
+          ></side-menu-item>
+          <menu-item
+            v-else
+            :name="getNameOrHref(item, true)"
+            :key="`menu-${item.children[0].name}`"
+          >
+            <common-icon :type="item.children[0].icon || ''" />
+            <span>{{ showTitle(item.children[0]) }} </span>
+            <div class="cover-lock" v-if="item.children[0].meta.isLock">
+              <Icon
+                type="md-bonfire"
+                color="#eee"
+                size="26"
+                style="vertical-align: sub;"
+              />
+              <span style="color:rgba(255, 255, 255, 0.7);">搭建中...</span>
+            </div>
+          </menu-item>
         </template>
         <template v-else>
-          <side-menu-item v-if="showChildren(item)" :key="`menu-${item.name}`" :parent-item="item"></side-menu-item>
-          <menu-item v-else :name="getNameOrHref(item)" :key="`menu-${item.name}`"><common-icon :type="item.icon || ''"/><span>{{ showTitle(item) }}</span></menu-item>
+          <side-menu-item
+            v-if="showChildren(item)"
+            :key="`menu-${item.name}`"
+            :parent-item="item"
+          ></side-menu-item>
+          <menu-item
+            v-else
+            :name="getNameOrHref(item)"
+            :key="`menu-${item.name}`"
+          >
+            <common-icon :type="item.icon || ''" />
+            <span>{{ showTitle(item) }}</span>
+          </menu-item>
         </template>
       </template>
     </Menu>
     <div class="menu-collapsed" v-show="collapsed" :list="menuList">
       <template v-for="item in menuList">
-        <collapsed-menu v-if="item.children && item.children.length > 1" @on-click="handleSelect" hide-title :root-icon-size="rootIconSize" :icon-size="iconSize" :theme="theme" :parent-item="item" :key="`drop-menu-${item.name}`"></collapsed-menu>
-        <Tooltip transfer v-else :content="showTitle(item.children && item.children[0] ? item.children[0] : item)" placement="right" :key="`drop-menu-${item.name}`">
-          <a @click="handleSelect(getNameOrHref(item, true))" class="drop-menu-a" :style="{textAlign: 'center'}"><common-icon :size="rootIconSize" :color="textColor" :type="item.icon || (item.children && item.children[0].icon)"/></a>
+        <collapsed-menu
+          v-if="item.children && item.children.length > 1"
+          @on-click="handleSelect"
+          hide-title
+          :root-icon-size="rootIconSize"
+          :icon-size="iconSize"
+          :theme="theme"
+          :parent-item="item"
+          :key="`drop-menu-${item.name}`"
+        ></collapsed-menu>
+        <Tooltip
+          transfer
+          v-else
+          :content="
+            showTitle(
+              item.children && item.children[0] ? item.children[0] : item
+            )
+          "
+          placement="right"
+          :key="`drop-menu-${item.name}`"
+        >
+          <a
+            @click="handleSelect(getNameOrHref(item, true))"
+            class="drop-menu-a"
+            :style="{ textAlign: 'center' }"
+            ><common-icon
+              :size="rootIconSize"
+              :color="textColor"
+              :type="item.icon || (item.children && item.children[0].icon)"
+          /></a>
         </Tooltip>
       </template>
     </div>
@@ -31,7 +98,7 @@ import mixin from './mixin'
 
 export default {
   name: 'SideMenu',
-  mixins: [ mixin ],
+  mixins: [mixin],
   components: {
     SideMenuItem,
     CollapsedMenu
@@ -110,5 +177,25 @@ export default {
 }
 </script>
 <style lang="less">
-@import './side-menu.less';
+@import "./side-menu.less";
+.side-menu-wrapper {
+  /deep/.ivu-menu-item:hover {
+    .cover-lock {
+      width: 100%;
+    }
+  }
+  .cover-lock {
+    transition: all ease 0.3s;
+    text-align: center;
+    line-height: 49px;
+    width: 0;
+    height: 49px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    z-index: 100;
+    background: linear-gradient(to left, #2196f3, #9e9e9e);
+  }
+}
 </style>

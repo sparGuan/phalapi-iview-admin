@@ -6,11 +6,12 @@
 import Icons from '_c/icons'
 export default {
   name: 'CommonIcon',
-  components: {Icons},
+  components: { Icons },
   props: {
     type: {
       type: String,
-      required: true
+      required: true,
+      default: ''
     },
     color: String,
     size: Number

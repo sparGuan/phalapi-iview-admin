@@ -12,9 +12,7 @@ const resolve = dir => {
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/'
-  : '/'
+const BASE_URL = process.env.NODE_ENV === 'production' ? '/' : '/'
 
 module.exports = {
   // Project deployment base
@@ -25,19 +23,41 @@ module.exports = {
   // https://www.foobar.com/my-app/
   // then change this to '/my-app/'
   baseUrl: BASE_URL,
+
   // tweak internal webpack configuration.
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // 如果你不需要使用eslint，把lintOnSave设为false即可
   lintOnSave: true,
+
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'))
   },
   // 打包时不生成.map文件
-  productionSourceMap: false
   // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
-  // devServer: {
-  //   proxy: 'localhost:3000'
-  // }
+  devServer: {
+    // 设置主机地址
+    host: 'localhost', // 设置默认端口
+    port: 8080, // 设置代理
+    proxy: {
+      '/api': {
+        // 目标 API 地址
+        target: 'http://develop.ytr98.com', // 如果要代理 websockets
+        ws: false, // 将主机标头的原点更改为目标URL
+        changeOrigin: true, // 是否跨域
+        pathRewrite: {
+          '^/api/': '/api/' // 重写接口
+        }
+      }
+    }
+  },
+  productionSourceMap: false,
+
+  pluginOptions: {
+    'style-resources-loader': {
+      preProcessor: 'stylus',
+      patterns: [path.resolve(__dirname, 'src/assets/stylus/base.styl')]
+    }
+  }
 }

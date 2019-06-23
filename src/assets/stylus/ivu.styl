@@ -1,0 +1,61 @@
+// 验证错误提示位置
+.ivu-form
+    .ivu-form-item
+        margin-bottom: 16px
+        .ivu-form-item
+            margin-bottom: 0
+        .ivu-form-item-content
+            position: relative
+            .ivu-form-item-error-tip
+                position: absolute
+                top: 4px
+                right: 2px
+                left: auto
+                padding-top: 0
+                height: 26px
+                line-height: 26px
+                font-size: 12px
+                transition: all 0
+                padding: 0 10px
+                background: #fff
+                background: -webkit-linear-gradient(left,rgba(255,255,255,0),#fff 8px)
+                background: linear-gradient(to right,rgba(255,255,255,0),#fff 8px)
+                &:hover
+                    display: none
+            .ivu-input-group .ivu-input
+                z-index: initial
+            .ivu-input-wrapper
+                .ivu-input
+                    &:-webkit-autofill
+                        -webkit-box-shadow: 0 0 0px 1000px white inset
+                .ivu-input:focus
+                    z-index: 3 !important
+                    border-color $basecolor !important
+                    box-shadow: 0 0 0 2px rgba(61,193,255,0.2) !important
+                .ivu-input:hover,.ivu-select-selection:hover
+                    z-index: 3 !important
+                .ivu-icon
+                    z-index: 4
+            .ivu-select-selection:focus, .ivu-select-selection:hover
+                z-index: 3 !important
+
+// 表单必输项无红点
+.formitemnoreddot
+    .ivu-form-item-label
+        &:before
+            display: none
+
+// modal自适应
+@media (max-width: 768px)
+  .loginmodalwrap
+    .ivu-modal
+      width: 400px !important
+      margin: 0 auto
+  .registermodalwrap
+    .ivu-modal
+      width: 957px !important
+      margin: 0 auto
+  .tanzhiresultModal
+    .ivu-modal
+      width: 100% !important
+      margin: 0 auto
