@@ -51,6 +51,7 @@
     "eslint-plugin-cypress": "^2.0.1",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "lint-staged": "^8.2.1",
     "mockjs": "^1.0.1-beta3",
     "style-resources-loader": "^1.2.1",
     "stylus": "^0.54.5",
